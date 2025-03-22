@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres-primary:
+    image: postgres
+    container_name: postgres-primary
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: products
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/postgres_primary_data:/var/lib/postgresql/data
+
+  postgres-replica-1:
+    image: postgres
+    container_name: postgres-replica-1
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: products
+    depends_on:
+      - postgres-primary
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./volumes/postgres_replica1_data:/var/lib/postgresql/data
+
+  postgres-replica-2:
+    image: postgres
+    container_name: postgres-replica-2
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: products
+    depends_on:
+      - postgres-primary
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./volumes/postgres_replica2_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # backend:
+  #   build: .
+  #   container_name: backend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     DATABASE_URL: "postgresql://user:password@postgres-primary:5432/products"
+  #     REPLICA_1_URL: "postgresql://user:password@postgres-replica-1:5432/products"
+  #     REPLICA_2_URL: "postgresql://user:password@postgres-replica-2:5432/products"
+  #     RABBITMQ_URL: "amqp://rabbitmq"
+  #   depends_on:
+  #     - postgres-primary
+  #     - postgres-replica-1
+  #     - postgres-replica-2
+  #     - rabbitmq
+
+volumes:
+  postgres_primary_data:
+  postgres_replica1_data:
+  postgres_replica2_data:
