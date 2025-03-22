@@ -51,23 +51,6 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  backend:
-    build: .
-    container_name: backend
-    ports:
-      - "${PORT}:${PORT}"
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      REPLICA_1_URL: ${REPLICA_1_URL}
-      REPLICA_2_URL: ${REPLICA_2_URL}
-      RABBITMQ_URL: ${RABBITMQ_URL}
-      PORT: ${PORT}
-    depends_on:
-      - postgres-primary
-      - postgres-replica-1
-      - postgres-replica-2
-      - rabbitmq
-
 volumes:
   postgres_primary_data:
   postgres_replica1_data:
